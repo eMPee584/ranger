@@ -130,7 +130,11 @@ class SizeMtimeLinemode(LinemodeBase):
     def infostring(self, fobj, metadata):
         if fobj.stat is None:
             return '?'
-        return "%s %s" % (human_readable(fobj.size),
+        if fobj.is_directory and not fobj.cumulative_size_calculated:
+            sizestring = fobj.size
+        else:
+            sizestring = human_readable(fobj.size)
+        return "%s %s" % (sizestring,
                           datetime.fromtimestamp(fobj.stat.st_mtime).strftime("%Y-%m-%d %H:%M"))
 
 
@@ -155,5 +159,8 @@ class SizeHumanReadableMtimeLinemode(LinemodeBase):
     def infostring(self, fobj, metadata):
         if fobj.stat is None:
             return '?'
-        size = human_readable(fobj.size)
-        return "%s %11s" % (size, human_readable_time(fobj.stat.st_mtime))
+        if fobj.is_directory and not fobj.cumulative_size_calculated:
+            sizestring = fobj.size
+        else:
+            sizestring = human_readable(fobj.size)
+        return "%s %11s" % (sizestring, human_readable_time(fobj.stat.st_mtime))
