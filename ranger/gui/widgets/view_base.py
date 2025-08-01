@@ -64,6 +64,19 @@ class ViewBase(Widget, DisplayableContainer):  # pylint: disable=too-many-instan
             except curses.error:
                 pass
 
+    def _draw_border_rectangle(self, left_start, right_end):
+        # Draw border lines
+        win.hline(0, left_start, curses.ACS_HLINE, right_end - left_start)
+        win.hline(self.hei - 1, left_start, curses.ACS_HLINE, right_end - left_start)
+        win.vline(1, left_start, curses.ACS_VLINE, self.hei - 2)
+        win.vline(1, right_end, curses.ACS_VLINE, self.hei - 2)
+
+        # Draw corners
+        self.addch(0, left_start, curses.ACS_ULCORNER)
+        self.addch(self.hei - 1, left_start, curses.ACS_LLCORNER)
+        self.addch(0, right_end, curses.ACS_URCORNER)
+        self.addch(self.hei - 1, right_end, curses.ACS_LRCORNER)
+
     def _draw_bookmarks(self):
         self.columns[-1].clear_image(force=True)
         self.fm.bookmarks.update_if_outdated()
