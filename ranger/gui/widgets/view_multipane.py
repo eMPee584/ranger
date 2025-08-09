@@ -4,6 +4,7 @@
 from __future__ import (absolute_import, division, print_function)
 
 import curses
+from ranger.container.settings import SIGNAL_PRIORITY_AFTER_SYNC
 from ranger.gui.widgets.view_base import ViewBase
 from ranger.gui.widgets.browsercolumn import BrowserColumn
 
@@ -13,6 +14,8 @@ class ViewMultipane(ViewBase):  # pylint: disable=too-many-ancestors
     def __init__(self, win):
         ViewBase.__init__(self, win)
 
+        self.settings.signal_bind('setopt.multipane_orientation', self._layoutchange_handler,
+                                  priority=SIGNAL_PRIORITY_AFTER_SYNC)
         self.fm.signal_bind('tab.layoutchange', self._layoutchange_handler)
         self.fm.signal_bind('tab.change', self._tabchange_handler)
         self.rebuild()
@@ -80,8 +83,11 @@ class ViewMultipane(ViewBase):  # pylint: disable=too-many-ancestors
         # Referenced from ranger.gui.widgets.view_miller
         win = self.win
         self.color('in_browser', 'border')
+        orientation = self.settings.multipane_orientation
+        if orientation is None:
+            orientation = 'vertical'
 
-        left_start = 0
+        left_start = top_start = 0
         right_end = self.wid - 1
 
         # Draw the outline borders
