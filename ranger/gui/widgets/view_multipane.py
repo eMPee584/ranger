@@ -101,6 +101,14 @@ class ViewMultipane(ViewBase):  # pylint: disable=too-many-ancestors
             # Draw the column separators
             if 'separators' in border_types:
                 for child in self.columns[:-1]:
+                    if orientation != 'vertical':
+                        y = child.y + child.hei - 1
+                        win.hline(y, 1, curses.ACS_HLINE, self.wid - 2)
+                        if 'outline' in border_types:
+                            self.addch(y, 0, curses.ACS_LTEE, 0)
+                            self.addch(y, self.wid - 1, curses.ACS_RTEE, 0)
+                        continue
+
                     x = child.x + child.wid
                     y = self.hei - 1
                     try:
@@ -115,10 +123,15 @@ class ViewMultipane(ViewBase):  # pylint: disable=too-many-ancestors
                         pass
         else:
             bordered_column = self.main_column
-            left_start = max(bordered_column.x - 1, 0)
-            right_end = min(left_start + bordered_column.wid + 1, self.wid - 1)
+
+            if orientation == 'vertical':
+                start = max(bordered_column.x - 1, 0)
+                end = min(start + bordered_column.wid + 1, self.wid - 1)
+            else:
+                start = max(bordered_column.y - 2, 0)
+                end = min(start + bordered_column.hei + 1, self.hei - 1)
             try:
-                self._draw_border_rectangle(left_start, right_end)
+                self._draw_border_rectangle(start, end, orientation = orientation)
             except curses.error:
                 pass
 
@@ -151,12 +164,28 @@ class ViewMultipane(ViewBase):  # pylint: disable=too-many-ancestors
             pad = 1
         else:
             pad = 0
-        column_width = int((wid - 2 - (len(self.columns) - 1)) / len(self.columns))
         left = 0
         top = 0
+
+        vertical = False
+        orientation = self.settings.multipane_orientation
+        if orientation is None or orientation == 'vertical':
+            vertical = True
+
+        total = wid if vertical else hei
+        col_count = len(self.columns)
+        elem_size = int((total - 2 - (col_count - 1)) / col_count)
+        rest = total - (2 + col_count - 1 + col_count * elem_size)
         for column in self.columns:
-            column.resize(top + pad, left + pad, hei - pad * 2, max(1, column_width))
-            left += column_width + 1
+            this_size = elem_size + (rest > 0)
+            rest -= rest > 0
+            this_hei = hei - pad * 2 if vertical else max(1, this_size)
+            this_wid = max(1, this_size) if vertical else wid - pad * 2
+            column.resize(top + pad, left + pad, this_hei, this_wid)
+            if vertical:
+                left += this_wid + 1
+            else:
+                top += this_hei + 1
 
     def poke(self):
         for tab in self.fm.tabs.values():
