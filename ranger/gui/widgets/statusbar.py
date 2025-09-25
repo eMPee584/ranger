@@ -274,19 +274,23 @@ class StatusBar(Widget):  # pylint: disable=too-many-instance-attributes
 
         right.add(" ", "space")
 
-        if self.fm.thisdir.flat:
-            right.add("flat=", base, 'flat')
-            right.add(str(self.fm.thisdir.flat), base, 'flat')
-            right.add(", ", "space")
+        if self.fm.thisdir is not None:
+            if self.fm.thisdir.flat:
+                right.add("flat=", base, 'flat')
+                right.add(str(self.fm.thisdir.flat), base, 'flat')
+                right.add(", ", "space")
 
-        if self.fm.thisdir.narrow_filter:
-            right.add("narrowed")
-            right.add(", ", "space")
+            if self.fm.thisdir.narrow_filter:
+                right.add("narrowed")
+                right.add(", ", "space")
 
-        if self.fm.thisdir.filter:
-            right.add("f=`", base, 'filter')
-            right.add(self.fm.thisdir.filter.pattern, base, 'filter')
-            right.add("', ", "space")
+            if self.fm.thisdir.filter:
+                right.add("f=`", base, 'filter')
+                right.add(self.fm.thisdir.filter.pattern, base, 'filter')
+                right.add("', ", "space")
+        else:
+            import pudb
+            pu.db
 
         if target.marked_items:
             if len(target.marked_items) == target.size:
