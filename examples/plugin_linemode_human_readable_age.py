@@ -17,6 +17,7 @@ class AgeLinemode(LinemodeBase, FileManagerAware):
 
     def __init__(self):
         self.fm.execute_console("map Ma linemode age")
+        self.fm.execute_console("map MA default_linemode age")
 
     def filetitle(self, fobj, metadata):
         return fobj.relative_path
