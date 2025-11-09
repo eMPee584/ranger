@@ -67,10 +67,11 @@ class Actions(  # pylint: disable=too-many-instance-attributes,too-many-public-m
 
         Reset the filemanager, clearing the directory buffer, reload rifle config
         """
-        old_path = self.thisdir.path
         self.previews = {}
         self.garbage_collect(-1)
-        self.enter_dir(old_path)
+        if self.thisdir is not None:
+            old_path = self.thisdir.path
+            self.enter_dir(old_path)
         self.change_mode('normal')
         if self.metadata:
             self.metadata.reset()
@@ -160,8 +161,9 @@ class Actions(  # pylint: disable=too-many-instance-attributes,too-many-public-m
         except AttributeError:
             pass
         else:
-            cwd.unload()
-            cwd.load_content()
+            if cwd is not None:
+                cwd.unload()
+                cwd.load_content()
 
     def notify(self, obj, duration=4, bad=False, exception=None):
         """:notify <text>
