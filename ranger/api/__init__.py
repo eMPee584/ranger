@@ -13,6 +13,18 @@ __all__ = ['ranger', 'LinemodeBase', 'hook_init', 'hook_ready', 'register_linemo
 
 
 # Hooks for use in plugins:
+def hook_loading(fm):  # pylint: disable=unused-argument
+    """A hook that is called before settings and initialisation is through.
+
+    Parameters:
+      fm = the file manager instance
+    Return Value:
+      ignored
+
+    This hook is executed before ranger loads the settings and initializes the UI. This is neccessary if a plugin wants to provide own settings or override facilities at the core of ranger.
+    """
+
+
 def hook_init(fm):  # pylint: disable=unused-argument
     """A hook that is called when ranger starts up.
 

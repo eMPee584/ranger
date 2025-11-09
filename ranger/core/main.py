@@ -127,6 +127,7 @@ def main(
         # Initialize objects
         fm = FM(paths=paths)
         FileManagerAware.fm_set(fm)
+        ranger.api.hook_loading(fm)
         load_settings(fm, args.clean)
 
         if args.show_only_dirs:
