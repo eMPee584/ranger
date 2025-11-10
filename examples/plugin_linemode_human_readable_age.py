@@ -25,6 +25,12 @@ class AgeLinemode(LinemodeBase, FileManagerAware):
     def infostring(self, fobj, metadata):
         if fobj.stat is None:
             return '?'
+        # F.e. loop mount points or sockets symlinked in /proc/PID/fd can
+        # show a last-modified date of 1970-01-01 00:00:00 UTC, which is
+        # the zero-point of the "unix epoch" time system.
+        if fobj.stat.st_mtime == 0:
+            return '-'
+
         now = datetime.now()
         mtime = datetime.fromtimestamp(fobj.stat.st_mtime)
         if now < mtime:
