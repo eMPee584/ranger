@@ -66,6 +66,29 @@ def human_readable_time(timestamp):
     return date.strftime("%H:%M")
 
 
+def human_readable_duration(start, end):
+    """Convert time elapsed between two timestamps into an easily readable format.
+    """
+    duration = end - start  # in seconds
+    days, rest = divmod(duration, 24 * 60 * 60)
+    hours, rest = divmod(rest, 60 * 60)
+    mins, secs = divmod(rest, 60)
+    full_secs, frac_secs = divmod(secs, 1)
+
+    chunks = []
+    if days:
+        chunks.append('%d days' % (days))
+    if hours:
+        chunks.append('%d hours' % (hours))
+    if mins:
+        chunks.append('%d min' % (mins))
+    if full_secs:
+        chunks.append('%.1fs' % (secs))
+    elif not days and not hours and not mins:
+        chunks.append('%dms' % (frac_secs * 1000))
+    return ' '.join(chunks)
+
+
 if __name__ == '__main__':
 
     # XXX: This mock class is a temporary (as of 2019-01-27) hack.
