@@ -288,6 +288,8 @@ class StatusBar(Widget):  # pylint: disable=too-many-instance-attributes
                 right.add("f=`", base, 'filter')
                 right.add(self.fm.thisdir.filter.pattern, base, 'filter')
                 right.add("', ", "space")
+        # this comes up when a directory ranger is in has been
+        # moved somewhere and *back*
         else:
             import pudb
             pu.db
