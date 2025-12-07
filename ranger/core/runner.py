@@ -28,10 +28,12 @@ from __future__ import (absolute_import, division, print_function)
 import logging
 import os
 import sys
+import time
 from io import open
 from subprocess import Popen, PIPE, STDOUT
 
 from ranger.ext.get_executables import get_executables, get_term
+from ranger.ext.human_readable import human_readable_duration
 from ranger.ext.popen_forked import Popen_forked
 
 
@@ -143,6 +145,15 @@ class Runner(object):  # pylint: disable=too-few-public-methods
                 except Exception as ex:  # pylint: disable=broad-except
                     self._log("Failed to suspend UI")
                     LOG.exception(ex)
+
+    def _color(self, name):
+        colors = {
+            'CYAN': 36,
+            'GREEN': 32,
+            'RED': 31,
+            'RESET': 0
+        }
+        return '\033[{0}m'.format(colors[name])
 
     def __call__(
         # pylint: disable=too-many-branches,too-many-statements
@@ -260,13 +271,18 @@ class Runner(object):  # pylint: disable=too-few-public-methods
 
         error = None
         process = None
+        result = None
+        start_time = time.time()
 
         try:
             self.fm.signal_emit('runner.execute.before',
                                 popen_kws=popen_kws, context=context)
             if clear_screen:
-                process = Popen(['cls' if os.name == 'nt' else 'clear'])
-                process.wait()
+                with Popen(['cls' if os.name == 'nt' else 'clear']) as process:
+                    process.wait()
+
+            def date_string():
+                return time.strftime("%F %a %H:%M:%S")
 
             try:
                 if 'f' in context.flags and 'r' not in context.flags:
@@ -274,6 +290,8 @@ class Runner(object):  # pylint: disable=too-few-public-methods
                     # supported, but we assume it is, since curses is used.
                     # pylint: disable=consider-using-with
                     Popen_forked(**popen_kws)
+                    self.fm.ui.status.notify("Forked: %s\n" % str(action),
+                                             duration=3)
                 else:
                     process = Popen(**popen_kws)
             except OSError as ex:
@@ -281,9 +299,26 @@ class Runner(object):  # pylint: disable=too-few-public-methods
                 self._log("Failed to run: %s\n%s" % (str(action), str(ex)))
             else:
                 if context.wait:
-                    process.wait()
+                    sys.stdout.write("%s %srunning: %s%s\n" % (
+                        date_string(), self._color('CYAN'),
+                        str(action), self._color('RESET')))
+                    result = process.wait()
                 elif process:
                     self.zombies.add(process)
+
+                if result:
+                    msg = "%sexit status %d (%s) from:" % (
+                        self._color('RED'), result,
+                        human_readable_duration(start_time, time.time()))
+                else:
+                    msg = "%sfinished (%s):" % (
+                        self._color('GREEN'),
+                        human_readable_duration(start_time, time.time()))
+                sys.stdout.write("%s %s %s%s\n" % (
+                    date_string(), msg, str(action), self._color('RESET')))
+                msg = ' ' + (self.fm.ui.termsize[1] - 2) * '—' + ' '
+                sys.stdout.write("%s\n" % msg)
+
                 if wait_for_enter:
                     press_enter()
         except Exception:  # pylint: disable=broad-exception-caught
