@@ -137,8 +137,10 @@ class TitleBar(Widget):
 
     def _add_tab(self, bar, tabname):
         tabtext = self._get_tab_text(tabname)
-        clr = 'good' if tabname == self.fm.current_tab else 'bad'
-        bar.addright(tabtext, 'tab', clr, fixed=True)
+        active = tabname == self.fm.current_tab
+        clr = 'good' if active else 'bad'
+        bar.addright(tabtext, 'tab', clr, fixed=active)
+        bar.right[-1].min_size = len(str(tabname))
 
     def _get_right_part(self, bar):
         # TODO: fix that pressed keys are cut off when chaining CTRL keys
