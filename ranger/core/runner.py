@@ -293,31 +293,31 @@ class Runner(object):  # pylint: disable=too-few-public-methods
                     self.fm.ui.status.notify("Forked: %s\n" % str(action),
                                              duration=3)
                 else:
+                    sys.stdout.write("%s %srunning: %s%s\n" % (
+                        date_string(), self._color('CYAN'),
+                        str(action), self._color('RESET')))
                     process = Popen(**popen_kws)
             except OSError as ex:
                 error = ex
                 self._log("Failed to run: %s\n%s" % (str(action), str(ex)))
             else:
                 if context.wait:
-                    sys.stdout.write("%s %srunning: %s%s\n" % (
-                        date_string(), self._color('CYAN'),
-                        str(action), self._color('RESET')))
                     result = process.wait()
                 elif process:
                     self.zombies.add(process)
 
-                if result:
-                    msg = "%sexit status %d (%s) from:" % (
-                        self._color('RED'), result,
-                        human_readable_duration(start_time, time.time()))
-                else:
-                    msg = "%sfinished (%s):" % (
-                        self._color('GREEN'),
-                        human_readable_duration(start_time, time.time()))
-                sys.stdout.write("%s %s %s%s\n" % (
-                    date_string(), msg, str(action), self._color('RESET')))
-                msg = ' ' + (self.fm.ui.termsize[1] - 2) * '—' + ' '
-                sys.stdout.write("%s\n" % msg)
+                if not 'f' in context.flags:
+                    if result:
+                        msg = "%sexit status %d (%s) from:" % (
+                            self._color('RED'), result,
+                            human_readable_duration(start_time, time.time()))
+                    else:
+                        msg = "%sfinished (%s):" % (
+                            self._color('GREEN'),
+                            human_readable_duration(start_time, time.time()))
+                    sys.stdout.write("%s %s %s%s\n" % (
+                        date_string(), msg, str(action), self._color('RESET')))
+                    sys.stdout.write(" %s \n" % ((self.fm.ui.termsize[1] - 2) * '—'))
 
                 if wait_for_enter:
                     press_enter()
