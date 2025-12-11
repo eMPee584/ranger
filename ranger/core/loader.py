@@ -324,6 +324,7 @@ class Loader(FileManagerAware):
         self.item = None
         self.load_generator = None
         self.throbber_status = 0
+        self.throbber_time = time()
         self.rotate()
         self.old_item = None
         self.status = None
@@ -331,9 +332,12 @@ class Loader(FileManagerAware):
     def rotate(self):
         """Rotate the throbber"""
         # TODO: move all throbber logic to UI
-        self.throbber_status = \
-            (self.throbber_status + 1) % len(self.throbber_chars)
-        self.status = self.throbber_chars[self.throbber_status]
+        now = time()
+        if (now -  self.throbber_time) > 1/15:
+            self.throbber_status = \
+                (self.throbber_status + 1) % len(self.throbber_chars)
+            self.status = self.throbber_chars[self.throbber_status]
+            self.throbber_time = now
 
     def add(self, obj, append=False):
         """Add an object to the queue.
