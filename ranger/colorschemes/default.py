@@ -105,6 +105,8 @@ class Default(ColorScheme):
                     bg = green
             elif context.link:
                 fg = cyan
+            elif context.keybuffer:
+                fg = cyan
             attr |= bold
 
         elif context.in_statusbar:
