@@ -308,11 +308,11 @@ class Runner(object):  # pylint: disable=too-few-public-methods
 
                 if not 'f' in context.flags:
                     if result:
-                        msg = "%sexit status %d (%s) from:" % (
+                        msg = "%sexit status %d (%s) <-" % (
                             self._color('RED'), result,
                             human_readable_duration(start_time, time.time()))
                     else:
-                        msg = "%sfinished (%s):" % (
+                        msg = "%sfinished (%s) <-" % (
                             self._color('GREEN'),
                             human_readable_duration(start_time, time.time()))
                     sys.stdout.write("%s %s %s%s\n" % (
