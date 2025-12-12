@@ -77,9 +77,9 @@ def human_readable_duration(start, end):
 
     chunks = []
     if days:
-        chunks.append('%d days' % (days))
+        chunks.append('%d day%s' % (days, 's' if abs(days) != 1 else ''))
     if hours:
-        chunks.append('%d hours' % (hours))
+        chunks.append('%d hour%s' % (hours, 's' if abs(hours) != 1 else ''))
     if mins:
         chunks.append('%d min' % (mins))
     if full_secs:
