@@ -66,10 +66,10 @@ class ViewBase(Widget, DisplayableContainer):  # pylint: disable=too-many-instan
 
     def _draw_border_rectangle(self, left_start, right_end):
         # Draw border lines
-        win.hline(0, left_start, curses.ACS_HLINE, right_end - left_start)
-        win.hline(self.hei - 1, left_start, curses.ACS_HLINE, right_end - left_start)
-        win.vline(1, left_start, curses.ACS_VLINE, self.hei - 2)
-        win.vline(1, right_end, curses.ACS_VLINE, self.hei - 2)
+        self.whline(0, left_start + 1, curses.ACS_HLINE, (right_end - left_start - 1))
+        self.whline(self.hei - 1, left_start + 1, curses.ACS_HLINE, (right_end - left_start - 1))
+        self.wvline(1, left_start, curses.ACS_VLINE, self.hei - 2)
+        self.wvline(1, right_end, curses.ACS_VLINE, self.hei - 2)
 
         # Draw corners
         self.addch(0, left_start, curses.ACS_ULCORNER)

@@ -150,7 +150,7 @@ class ViewMiller(ViewBase):  # pylint: disable=too-many-ancestors,too-many-insta
                 y = self.hei - 1
                 try:
                     # pylint: disable=no-member
-                    win.vline(1, x, curses.ACS_VLINE, y - 1)
+                    self.wvline(1, x, curses.ACS_VLINE, y - 1)
                     if 'outline' in border_types:
                         self.addch(0, x, curses.ACS_TTEE, 0)
                         self.addch(y, x, curses.ACS_BTEE, 0)
