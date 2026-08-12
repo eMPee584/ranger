@@ -96,13 +96,13 @@ class ViewMultipane(ViewBase):  # pylint: disable=too-many-ancestors
                     x = child.x + child.wid
                     y = self.hei - 1
                     try:
-                        self.wvline(1, x, curses.ACS_VLINE, y - 1)
+                        self.wvline(1, x, self.glyphs.VLINE, y - 1)
                         if 'outline' in border_types:
-                            self.addch(0, x, curses.ACS_TTEE, 0)
-                            self.addch(y, x, curses.ACS_BTEE, 0)
+                            self.addch(0, x, self.glyphs.TTEE, 0)
+                            self.addch(y, x, self.glyphs.BTEE, 0)
                         else:
-                            self.addch(0, x, curses.ACS_VLINE, 0)
-                            self.addch(y, x, curses.ACS_VLINE, 0)
+                            self.addch(0, x, self.glyphs.VLINE, 0)
+                            self.addch(y, x, self.glyphs.VLINE, 0)
                     except curses.error:
                         pass
         else:
